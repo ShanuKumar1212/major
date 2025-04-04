@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treatment</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #8B5A2B; /* Soil color */
+        }
+        .form-container {
+            max-width: 500px;
+            background: #d4edda; /* Light green */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            transition: 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #3182ce;
+            outline: none;
+            box-shadow: 0 0 5px rgba(49, 130, 206, 0.5);
+        }
+        button {
+            background-color: #3182ce;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        .treatment-output {
+            background: #e6f7e6;
+            padding: 10px;
+            border-left: 5px solid #38a169;
+            border-radius: 5px;
+            margin-top: 10px;
+            color: #2f855a;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+    <div class="form-container">
+        <h1 class="text-2xl font-semibold text-center mb-5">Get Your Treatment</h1>
+        <form id="treatment-form" method="POST">
+            <label class="block mb-4">
+                <span class="text-gray-700">Disease Name:</span>
+                <input type="text" id="disease" name="disease">
+            </label>
+
+            <label class="block mb-4">
+                <span class="text-gray-700">Age:</span>
+                <input type="number" id="age" name="age">
+            </label>
+
+            <label class="block mb-4">
+                <span class="text-gray-700">Gender:</span>
+                <select id="gender" name="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </label>
+
+            <label class="block mb-4">
+                <span class="text-gray-700">Level of Disease:</span>
+                <select id="disease-level" name="disease_level">
+                    <option value="Normal">Normal</option>
+                    <option value="High">High</option>
+                </select>
+            </label>
+
+            <button type="submit" class="w-full">Submit</button>
+        </form>
+
+        <div id="treatment-output" class="treatment-output hidden mt-5"></div>
+    </div>
+
+    <script>
+        $("#disease").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/disease-autocomplete", { term: request.term }, response);
+            }
+        });
+
+        $("#treatment-form").submit(function (e) {
+            e.preventDefault();
+            $.post("/treatment", $(this).serialize(), function (data) {
+                $("#treatment-output").removeClass("hidden").html(
+                    `<p>${data.treatment}</p>`
+                );
+            });
+        });
+    </script>
+</body>
+</html>
